@@ -1,25 +1,57 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import questionSet from './QuestionSet';
+import Result from './components/result';
+export default function App() {
+	const [showResult, setShowResult] = useState(false);
+	const [liveQuestion, setliveQuestion] = useState(0);
+	const [score, setScore] = useState(0);
+	const [List, setList] = useState([]);
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const handleAnswerButtonClick = (correctAns, user_choice) => {
+		if(correctAns===user_choice){
+			setScore(score + 1);
+		}
+ 		setList(List.concat(user_choice));
+		const nextQuestion = liveQuestion + 1;
+		if(nextQuestion < questionSet.length){
+			setliveQuestion(nextQuestion);
+		}else {
+			setShowResult(true);
+		}
+		
+	}
+
+	const handlePlayAgainButtonClick = () => {
+ 		setList([]);
+		setliveQuestion(0)
+		setShowResult(false);
+		setScore(0);
+	}
+	return (
+		<div className='container'>
+			{showResult ? (
+				<div className='result-section fd-column'>
+					<Result List={List} score={score} questionSet={questionSet} />
+					<div className='answer-section' >
+						<button style={{alignItems: 'center', display: 'flex', justifyContent: 'center', justifyItems: 'center'}} onClick={() => handlePlayAgainButtonClick()}>Play Again</button>
+					</div>
+				</div>
+			) : (
+				<>
+					<div className='question-section'>
+						<div className='question-count'>
+							<span>Question {liveQuestion+1}</span>/{questionSet.length}
+						</div>
+						<div className='question-text'>{questionSet[liveQuestion].Text}</div>
+					</div>
+					<hr style={{ width: "-webkit-fill-available" }} />
+					<div className='answer-section'>
+						{questionSet[liveQuestion].answerOptions.map((answerOption) => (
+							<button key={answerOption.answerValue} onClick={() => handleAnswerButtonClick(questionSet[liveQuestion].CorrectAnswer, answerOption.answerValue)}>{answerOption.answerValue}</button>
+						))}
+					</div>
+				</>
+			)}
+		</div>
+	);
 }
-
-export default App;
