@@ -13,7 +13,7 @@ const Result = ({List, score, questionSet}) => {
 						{List.map((ele,i) => (
 							<tr key={i}>
 				    			<td>Q.{i+1}</td>
-								<td>{ele}</td>
+								<td style={{color: ele === questionSet[i].CorrectAnswer ? '#2dd216': '#ff0000' }}>{ele}</td>
 								<td>{questionSet[i].CorrectAnswer}</td>
 							</tr>
 						))}
