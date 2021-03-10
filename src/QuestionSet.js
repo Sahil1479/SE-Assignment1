@@ -49,14 +49,14 @@ const questionSet =[
         CorrectAnswer: "7",
     },
     {
-        Text: 'How many colors are there in a rainbow?',
+        Text: 'The purest form of iron is ?',
         answerOptions: [
-            { answerValue: '5' },
-            { answerValue: '7' },
-            { answerValue: '4' },
-            { answerValue: '10' },
+            { answerValue: 'wrought iron' },
+            { answerValue: 'pig iron' },
+            { answerValue: 'steel' },
+            { answerValue: 'nickel steel' },
         ],
-        CorrectAnswer: "7",
+        CorrectAnswer: "wrought iron",
     },
     {
         Text: 'Animals Which Eat Both Plants And Animals, Called?',
