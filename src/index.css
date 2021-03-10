@@ -113,6 +113,7 @@ th, td {
   text-align: left;
   color: #18191a;
   font-size: medium;
+  font-weight: 700;
 }
 #t01 tr:nth-child(even) {
   background-color: rgb(227 227 255);
