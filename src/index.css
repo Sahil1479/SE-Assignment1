@@ -163,3 +163,64 @@ th, td {
     padding: 15px;
   }
 }
+
+.spinner {
+  margin: 100px auto;
+  width: 40px;
+  height: 40px;
+  position: relative;
+  text-align: center;
+  animation: rotate 2s infinite linear;
+}
+
+.spinner .dot {
+  width: 10px;
+  height: 10px;
+  background-color: #3498db; /* Blue color */
+  border-radius: 50%;
+  display: inline-block;
+  position: absolute;
+  animation: bounce 2s infinite ease-in-out;
+}
+
+.spinner .dot:nth-child(1) {
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: -0.6s;
+}
+
+.spinner .dot:nth-child(2) {
+  top: 50%;
+  left: 0;
+  transform: translate(-50%, -50%);
+  animation-delay: -0.4s;
+}
+
+.spinner .dot:nth-child(3) {
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: -0.2s;
+}
+
+.spinner .dot:nth-child(4) {
+  top: 50%;
+  right: 0;
+  transform: translate(50%, -50%);
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1);
+  }
+}
