@@ -9,21 +9,20 @@ const App = () => {
   const [liveQuestion, setliveQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [List, setList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [topic, setTopic] = useState(''); // New state for the topic input
+  const [error, setError] = useState(''); // New state for error handling
 
-  useEffect(() => {
-    fetchQuestions();
-  }, []);
-
-  const fetchQuestions = async () => {
-	setLoading(true);
+  const fetchQuestions = async (customTopic) => {
+    setLoading(true);
+    setError('');
     try {
       const response = await axios.post(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBiYR1HqQq49_76fyY1fG_Ke5KaMZypv1g',
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyBvATRE-1ajaYtUvog2jqJN0a3lxLrtSi0',
         {
-			"contents": [{
-			  "parts":[{
-					"text": `Generate a list of 10 multiple-choice questions about Basic Chemistry. Each question should have the following structure json:
+          "contents": [{
+            "parts": [{
+              "text": `Generate a list of 10 multiple-choice questions about ${customTopic}. Each question should have the following structure json:
 {
   "Text": "Question text",
   "answerOptions": [
@@ -34,9 +33,9 @@ const App = () => {
   ],
   "CorrectAnswer": "Correct answer value"
 }`
-				}]
-			}]
-		},
+            }]
+          }]
+        },
         {
           headers: {
             'Content-Type': 'application/json',
@@ -44,14 +43,16 @@ const App = () => {
         }
       );
 
-	  const questionsResponse = response.data.candidates[0].content.parts[0].text;
-	  const jsonObject = JSON.parse(questionsResponse.slice(8, -3));
-	  console.log("QuestionsResponse: ", jsonObject);
+      const questionsResponse = response.data.candidates[0].content.parts[0].text;
+      const jsonObject = JSON.parse(questionsResponse.slice(8, -3));
+      console.log("QuestionsResponse: ", jsonObject);
 
       setQuestions(jsonObject);
-	  setLoading(false);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching questions:', error);
+      setError('Failed to fetch questions. Please try again.');
+      setLoading(false);
     }
   };
 
@@ -74,7 +75,15 @@ const App = () => {
     setliveQuestion(0);
     setShowResult(false);
     setScore(0);
-	fetchQuestions();
+    setTopic(''); // Reset topic
+  };
+
+  const handleStartQuiz = () => {
+    if (topic.trim() === '') {
+      setError('Please enter a topic to start the quiz.');
+      return;
+    }
+    fetchQuestions(topic);
   };
 
   return (
@@ -91,32 +100,52 @@ const App = () => {
         </div>
       ) : (
         <>
-          { loading ? <div><div className="spinner">
-    <div className="dot"></div>
-    <div className="dot"></div>
-    <div className="dot"></div>
-  </div></div> : <><div className="question-section">
-            <div className="question-count">
-              <span>Question {liveQuestion + 1}</span>/{questionSet.length}
+          {loading ? (
+            <div>
+              <div className="spinner">
+                <div className="dot"></div>
+                <div className="dot"></div>
+                <div className="dot"></div>
+              </div>
             </div>
-            <div className="question-text">
-              {questionSet[liveQuestion].Text}
+          ) : questionSet.length > 0 ? (
+            <>
+              <div className="question-section">
+                <div className="question-count">
+                  <span>Question {liveQuestion + 1}</span>/{questionSet.length}
+                </div>
+                <div className="question-text">
+                  {questionSet[liveQuestion].Text}
+                </div>
+              </div>
+              <div className="answer-section">
+                {questionSet[liveQuestion].answerOptions.map((answerOption) => (
+                  <button
+                    key={answerOption.answerValue}
+                    onClick={() =>
+                      handleAnswerButtonClick(
+                        questionSet[liveQuestion].CorrectAnswer,
+                        answerOption.answerValue
+                      )
+                    }>
+                    {answerOption.answerValue}
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="start-quiz-section">
+              <h2 style={{ color: 'black' }}>Welcome to the Quiz App!</h2>
+              <input
+                type="text"
+                placeholder="Enter a topic (e.g., Chemistry, History)"
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+              />
+              <button onClick={handleStartQuiz}>Start Quiz</button>
+              {error && <p className="error-message">{error}</p>}
             </div>
-          </div>
-          <div className="answer-section">
-            {questionSet[liveQuestion].answerOptions.map((answerOption) => (
-              <button
-                key={answerOption.answerValue}
-                onClick={() =>
-                  handleAnswerButtonClick(
-                    questionSet[liveQuestion].CorrectAnswer,
-                    answerOption.answerValue
-                  )
-                }>
-                {answerOption.answerValue}
-              </button>
-            ))}
-          </div></>}
+          )}
         </>
       )}
     </div>
